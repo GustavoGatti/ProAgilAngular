@@ -7,6 +7,7 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
+    "postinstall": "ngcc",
     "e2e": "ng e2e"
   },
   "private": true,
@@ -21,6 +22,7 @@
     "@angular/router": "~10.1.4",
     "@fortawesome/fontawesome-free": "^5.15.1",
     "bootstrap": "^5.0.0-beta1",
+    "ngx-bootstrap": "^6.2.0",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",
     "zone.js": "~0.10.2"
