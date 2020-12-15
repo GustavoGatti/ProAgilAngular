@@ -24,4 +24,18 @@ constructor(private http: HttpClient) { }
     return this.http.get<Evento>(`${this.baseUrl}/${id}`);
   }
 
+  postEvento(evento: Evento){
+    //console.log(evento);
+    return this.http.post('https://localhost:44303/api/evento', evento);
+  }
+
+  putEvento(evento: Evento, id: number){
+    console.log("Id do evento 121212: " + id);
+    return this.http.put(`${this.baseUrl}/${id}`, evento);
+  }
+
+  deleteEvento(id: number){
+    return this.http.delete(`${this.baseUrl}/${id}`);
+  }
+
 }
