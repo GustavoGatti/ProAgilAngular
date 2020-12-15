@@ -24,7 +24,7 @@ export class EventoComponent implements OnInit {
   imagemMargem = 2;
   mostrarImagem: boolean = false;
   registerForm: FormGroup;
-  modoalvar = 'put';
+  modoalvar = '';
   temp: number;
   bodyDeletarEvento = '';
 
