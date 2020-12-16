@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {Evento} from '../_models/Evento';
-import {Observable} from 'rxjs';
+import {from, Observable} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -36,6 +36,14 @@ constructor(private http: HttpClient) { }
 
   deleteEvento(id: number){
     return this.http.delete(`${this.baseUrl}/${id}`);
+  }
+
+  postUpload(file: File){
+    console.log(file);
+    const fileToUpload = file[0] as File;
+    const formData = new FormData();
+    formData.append('file', fileToUpload, fileToUpload.name);
+    return this.http.post(`${this.baseUrl}/upload`, formData);
   }
 
 }

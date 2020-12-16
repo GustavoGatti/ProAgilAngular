@@ -29,6 +29,8 @@ export class EventoComponent implements OnInit {
   modoalvar = '';
   temp: number;
   bodyDeletarEvento = '';
+  file: File;
+  nomeTemp: string;
 
   constructor(private eventoService: EventoService, private modalService: BsModalService, private fb: FormBuilder
     ,private localeService: BsLocaleService, private toastr: ToastrService) {
@@ -69,8 +71,9 @@ export class EventoComponent implements OnInit {
   editarEvento(evento: Evento, template: any){
     this.modoalvar = 'put';
     this.openModal(template);
-    this.evento = evento;
-    this.registerForm.patchValue(evento);
+    this.evento = Object.assign({},evento);
+    this.evento.imagemUrl = '';
+    this.registerForm.patchValue(this.evento);
   }
 
   novoEvento(template: any){
@@ -81,7 +84,6 @@ export class EventoComponent implements OnInit {
 
   excluirEvento(evento: Evento, template: any) {
     this.openModal(template);
-    
     this.evento = evento;
     this.bodyDeletarEvento = `Tem certeza que deseja excluir o Evento: ${evento.tema}, Código: ${evento.eventoId}`;
   }
@@ -103,6 +105,32 @@ export class EventoComponent implements OnInit {
     );
   }
 
+/*
+Criar uma varial this.dataAtual 
+Esse metodo é para recarregar a grid de imagem e forçar o cash do navegador, esta comentado pq estou com um
+erro no edit e ta dificultando minha vida, mas é a sessão 10 do curso se full stack
+chamar a função antes do post e put do evento
+  upload(){
+    //adicionar o data atual no src da imagem na frente ? _ts={{dataAtual}}, sim é gambiarra
+    if(this.modoalvar === 'post'){
+      this.evento.imagemUrl = this.nomeTemp;
+      this.eventoService.postUpload(this.file, this.nomeTemp).subscribe(
+        ()=>{
+          this.dataAtual = new Date().getDate().toString();
+          this.getEventos();
+        }
+      )
+    }else{
+      this.evento.imagemUrl = this.nomeTemp;
+      this.eventoService.postUpload(this.file, this.nomeTemp).subscribe(
+        ()=>{
+          this.dataAtual = new Date().getDate().toString();
+          this.getEventos();
+        }
+      )
+    }
+  }
+*/
   filtrarEventos(filtrarPor: string): Evento[]{
     filtrarPor = filtrarPor.toLocaleLowerCase();
     return this.eventos.filter(
@@ -110,38 +138,57 @@ export class EventoComponent implements OnInit {
     );
   }
 
+  
+  onFileChange(event){
+    const reader = new FileReader();
+    //console.log("Testando: " + event.target.files);
+    if(event.target.files){
+      this.file = event.target.files;
+      this.nomeTemp = this.file[0].name;
+      console.log(this.file[0].name);
+    }
+  
+  }
+
   salvarAlteracao(template: any){
     if(this.registerForm.valid){
       if(this.modoalvar === 'post'){
         this.evento = Object.assign({}, this.registerForm.value);
-      this.eventoService.postEvento(this.evento).subscribe(
-        (novoEvento: Evento) => {
-          console.log(novoEvento);
-          template.hide();
-          this.getEventos();
-          this.toastr.success('Inserido com Sucesso');
-        },
-        error => {
-          console.log(error);
-          this.toastr.error('Erro ao inserir');
-        });
+        console.log(this.nomeTemp);
+        this.eventoService.postUpload(this.file).subscribe(); 
+      
+        this.evento.imagemUrl = this.nomeTemp;
+        this.eventoService.postEvento(this.evento).subscribe(
+          (novoEvento: Evento) => {
+            console.log(novoEvento);
+            template.hide();
+            this.getEventos();
+            this.toastr.success('Inserido com Sucesso');
+          },
+          error => {
+            console.log(error);
+            this.toastr.error('Erro ao inserir');
+          });
       }else if(this.modoalvar === 'put'){
       console.log("Id do evento: " + this.evento.eventoId);
-      this.temp = this.evento.eventoId;
-      console.log("Temp: " + this.temp);
-      this.evento = Object.assign({id: this.evento.eventoId}, this.registerForm.value);
-      console.log("Id do evento: " + this.evento.eventoId);
-      this.eventoService.putEvento(this.evento, this.temp).subscribe(
-        (novoEvento: Evento) => {
-          console.log(novoEvento);
-          template.hide();
-          this.getEventos();
-          this.toastr.success('Editado com Sucesso');
-        },
-        error => {
-          console.log(error);
-          this.toastr.error('Erro ao Editar');
-        });
+        this.temp = this.evento.eventoId;
+        console.log("Temp: " + this.temp);
+      
+        this.evento = Object.assign({id: this.evento.eventoId}, this.registerForm.value);
+        this.eventoService.postUpload(this.file).subscribe(); 
+        this.evento.imagemUrl = this.nomeTemp;
+        console.log("Id do evento: " + this.evento.eventoId);
+        this.eventoService.putEvento(this.evento, this.temp).subscribe(
+          (novoEvento: Evento) => {
+            console.log(novoEvento);
+            template.hide();
+            this.getEventos();
+            this.toastr.success('Editado com Sucesso');
+          },
+          error => {
+            console.log(error);
+            this.toastr.error('Erro ao Editar');
+          });
       }
       
     }
@@ -158,6 +205,7 @@ export class EventoComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]]
     });
   }
+
 
 
 }
