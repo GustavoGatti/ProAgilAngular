@@ -8,7 +8,7 @@ import { ModalModule } from 'ngx-bootstrap/modal';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { EventoComponent } from './evento/evento.component';
-import { HttpClientModule} from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
 import { NavComponent } from './nav/nav.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DateTimeFormatPipePipe } from './_helps/DateTimeFormatPipe.pipe';
@@ -19,9 +19,13 @@ import { PalestrantesComponent } from './palestrantes/palestrantes.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { ContatosComponent } from './contatos/contatos.component';
 import { TituloComponent } from './_shared/titulo/titulo.component';
+import { UserComponent } from './user/user.component';
+import { LoginComponent } from './user/login/login.component';
+import { RegistrationComponent } from './user/registration/registration.component';
+import { AuthInterceptor } from './auth/auth.interceptor';
 
 @NgModule({
-  declarations: [				 
+  declarations: [					 
     AppComponent,
     EventoComponent,
     NavComponent,
@@ -29,7 +33,10 @@ import { TituloComponent } from './_shared/titulo/titulo.component';
     PalestrantesComponent,
     DashboardComponent,
     ContatosComponent, 
-    TituloComponent
+    TituloComponent,
+    UserComponent,
+    LoginComponent,
+    RegistrationComponent
    ],
   imports: [
     BrowserModule,
@@ -45,7 +52,14 @@ import { TituloComponent } from './_shared/titulo/titulo.component';
     BrowserAnimationsModule,
     ToastrModule.forRoot()
   ],
-  providers: [EventoService],
+  exports: [TituloComponent],
+  providers: [EventoService,
+          {
+            provide: HTTP_INTERCEPTORS,
+            useClass: AuthInterceptor,
+            multi: true
+          }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
